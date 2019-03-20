@@ -33,13 +33,6 @@ export class PostgresMigrator extends Migrator<PoolClient> {
     this._pool = pool;
   }
 
-/*
-CREATE TABLE IF NOT EXISTS migrations (
-  id SERIAL PRIMARY KEY,
-  last INTEGER DEFAULT 0
-);
-*/
-
   protected async onInitialize(): Promise<void> {
     await this._pool.query('CREATE TABLE IF NOT EXISTS migrations (id SERIAL PRIMARY KEY, last INTEGER DEFAULT 0);');
     await this._pool.query('INSERT INTO migrations (id, last) VALUES (0, 0) ON CONFLICT DO NOTHING;');
