@@ -1,0 +1,4 @@
+{
+  "testPathIgnorePatterns": ["/node_modules/", "<rootDir>/dist/"],
+  "testMatch": [ "./**/?(*.)+(spec|test).js" ]
+}
