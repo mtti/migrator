@@ -1,0 +1,3 @@
+CREATE ROLE tester WITH LOGIN UNENCRYPTED PASSWORD 'password';
+
+CREATE DATABASE node_migrator_test WITH OWNER = tester;

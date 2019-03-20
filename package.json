@@ -16,7 +16,7 @@
     "test:integration": "npm run lint:js && npm run jest:js",
     "lint:js": "eslint 'integration-tests/**/*.js'",
     "lint:ts": "tslint 'src/**/*.ts'",
-    "jest:js": "jest --config ./integration-tests/jest.config.json",
+    "jest:js": "jest -i --config ./integration-tests/jest.config.json",
     "jest:ts": "jest --config ./jest.config.ts.json",
     "tsc": "tsc",
     "tslint": "tslint",
@@ -31,6 +31,7 @@
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "2.16.0",
     "jest": "24.5.0",
+    "pg": "7.9.0",
     "ts-jest": "24.0.0",
     "tslint": "5.14.0",
     "typescript": "3.3.3333"

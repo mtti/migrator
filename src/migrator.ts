@@ -32,6 +32,8 @@ export abstract class Migrator<T> {
 
   /** Applies all unapplied migrations. */
   public async up(): Promise<void> {
+    await this.onInitialize();
+
     const lastRunMigration: number = await this.getLast();
     const unappliedMigrations = this._migrations
       .filter((migration: IMigration<T>) => migration.id > lastRunMigration);
@@ -41,11 +43,16 @@ export abstract class Migrator<T> {
     return unappliedMigrations.reduce(reducer, Promise.resolve());
   }
 
+  /** Called when the migrator is starting. */
+  protected async onInitialize(): Promise<void> {
+    return;
+  }
+
   /** Returns the ID of the last applied migration. */
   protected abstract async getLast(): Promise<number>;
 
   /** Called before a migration is run. */
-  protected async onInitialize(): Promise<void> {
+  protected async onBeforeMigration(): Promise<void> {
     return;
   }
 
@@ -60,20 +67,20 @@ export abstract class Migrator<T> {
   }
 
   /** Called after a migration is run regardless of whether it threw an error. */
-  protected async onFinalize() {
+  protected async onAfterMigration() {
     return;
   }
 
   /** Runs a migration. */
   private async _apply(migration: IMigration<T>): Promise<void> {
-    await this.onInitialize();
+    await this.onBeforeMigration();
     try {
       await this.onMigrate(migration);
     } catch (e) {
       await this.onCancel();
       throw e;
     } finally {
-      this.onFinalize();
+      this.onAfterMigration();
     }
   }
 }

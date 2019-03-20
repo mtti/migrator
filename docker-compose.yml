@@ -1,0 +1,10 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:9.6.10-alpine
+    environment:
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./integration-tests/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - "5432:5432"

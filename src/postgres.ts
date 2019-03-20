@@ -33,6 +33,18 @@ export class PostgresMigrator extends Migrator<PoolClient> {
     this._pool = pool;
   }
 
+/*
+CREATE TABLE IF NOT EXISTS migrations (
+  id SERIAL PRIMARY KEY,
+  last INTEGER DEFAULT 0
+);
+*/
+
+  protected async onInitialize(): Promise<void> {
+    await this._pool.query('CREATE TABLE IF NOT EXISTS migrations (id SERIAL PRIMARY KEY, last INTEGER DEFAULT 0);');
+    await this._pool.query('INSERT INTO migrations (id, last) VALUES (0, 0) ON CONFLICT DO NOTHING;');
+  }
+
   protected async getLast(): Promise<number> {
     const client = await this._pool.connect();
     try {
@@ -43,7 +55,7 @@ export class PostgresMigrator extends Migrator<PoolClient> {
     }
   }
 
-  protected async onInitialize(): Promise<void> {
+  protected async onBeforeMigration(): Promise<void> {
     this._client = await this._pool.connect();
   }
 
@@ -58,7 +70,7 @@ export class PostgresMigrator extends Migrator<PoolClient> {
     await this.client.query('ROLLBACK;');
   }
 
-  protected async onFinalize(): Promise<void> {
+  protected async onAfterMigration(): Promise<void> {
     this.client.release();
     this._client = undefined;
   }
