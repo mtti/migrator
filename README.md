@@ -2,6 +2,8 @@ A pragmatic database migration utility. Designed mainly for PostgreSQL but exten
 
 Written in TypeScript but intended to be usable from plain JavaScript. The compiled JavaScript targets Node 8.10, which is the newest version supported by AWS Lambda.
 
+**Warning:** All versions prior to `1.0.0` are pre-releases. Expect the API to change wildly during this period.
+
 ## Overview
 
 This library is designed based on three assumptions:
