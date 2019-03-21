@@ -3,7 +3,7 @@
   "engines": {
     "node": ">=8.10.0"
   },
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Database migration utility with built-in PostgreSQL support",
   "author": "Matti Hiltunen",
   "license": "Apache-2.0",
