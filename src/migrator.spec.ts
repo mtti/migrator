@@ -1,5 +1,5 @@
 /*
-Copyright 2018-2019 Matti Hiltunen
+Copyright 2019 Matti Hiltunen
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,12 +21,19 @@ function createDummyMigrations(count: number): Array<IMigration<void>> {
 
   for (let i = 0; i < count; i++) {
     result.push({
-      id: i,
+      id: i + 1,
       up: jest.fn().mockResolvedValue(null),
     });
   }
 
   return result;
+}
+
+function createFaultyMigration(id: number): IMigration<void> {
+  return {
+    id,
+    up: jest.fn(() => { throw new Error('Dummy error'); }),
+  };
 }
 
 class DummyMigrator extends Migrator<void> {
@@ -50,12 +57,35 @@ class DummyMigrator extends Migrator<void> {
 describe('Migrator', () => {
   let migrator: DummyMigrator;
   let migrations: Array<IMigration<void>>;
+  let error: Error|null;
 
   describe('up()', () => {
-    describe('partially applied array of migrations', () => {
+    beforeEach(() => {
+      error = null;
+    });
+
+    describe('smallest migration ID is smaller than 1', () => {
+      beforeEach(async () => {
+        const migration = {
+          id: 0,
+          up: () => Promise.resolve(),
+        };
+        try {
+          migrator = new DummyMigrator([ migration ], 0);
+        } catch (err) {
+          error = err;
+        }
+      });
+
+      it('throws an error', () => {
+        expect(error).not.toBeNull();
+      });
+    });
+
+    describe('some migrations have already been applied', () => {
       beforeEach(async () => {
         migrations = createDummyMigrations(3);
-        migrator = new DummyMigrator(migrations, 1);
+        migrator = new DummyMigrator(migrations, 2);
         await migrator.up();
       });
 
@@ -69,6 +99,27 @@ describe('Migrator', () => {
 
       it('calls the third migration', () => {
         expect(migrations[2].up).toHaveBeenCalled();
+      });
+    });
+
+    describe('when a migration throws', () => {
+      beforeEach(async () => {
+        migrations = createDummyMigrations(3);
+        migrations[1] = createFaultyMigration(2);
+        migrator = new DummyMigrator(migrations, 0);
+        try {
+          await migrator.up();
+        } catch (err) {
+          error = err;
+        }
+      });
+
+      it('throws', () => {
+        expect(error).not.toBeNull();
+      });
+
+      it('does not call the migration after the faulty one', () => {
+        expect(migrations[2].up).not.toHaveBeenCalled();
       });
     });
   });

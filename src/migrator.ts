@@ -1,5 +1,5 @@
 /*
-Copyright 2018-2019 Matti Hiltunen
+Copyright 2019 Matti Hiltunen
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -28,6 +28,9 @@ export abstract class Migrator<T> {
   constructor(migrations: Array<IMigration<T>>) {
     this._migrations = [ ...migrations ];
     this._migrations.sort((a: IMigration<T>, b: IMigration<T>) => a.id - b.id);
+    if (this._migrations.length > 0 && this._migrations[0].id <= 0) {
+      throw new Error('Smallest migration ID should be equal or greater than 1.');
+    }
   }
 
   /** Applies all unapplied migrations. */
@@ -51,13 +54,11 @@ export abstract class Migrator<T> {
   /** Returns the ID of the last applied migration. */
   protected abstract async getLast(): Promise<number>;
 
+  /** Called to run a migration. */
+  protected abstract async onMigrate(migration: IMigration<T>): Promise<void>;
+
   /** Called before a migration is run. */
   protected async onBeforeMigration(): Promise<void> {
-    return;
-  }
-
-  /** Called to run a migration. */
-  protected async onMigrate(migration: IMigration<T>): Promise<void> {
     return;
   }
 
