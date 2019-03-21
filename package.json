@@ -1,5 +1,5 @@
 {
-  "name": "@mtti/node-migrator",
+  "name": "@mtti/migrator",
   "engines": {
     "node": ">=8.10.0"
   },
