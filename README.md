@@ -1,6 +1,6 @@
-A pragmatic database migration utility. Designed mainly for PostgreSQL but extendable for use with probably any database.
+[![Written in TypeScript](https://flat.badgen.net/badge/icon/typescript?icon=typescript&label)](http://www.typescriptlang.org/) [![Works with PostgreSQL](https://flat.badgen.net/badge/icon/postgresql?icon=postgresql&label)](https://www.postgresql.org/) [![License](https://flat.badgen.net/github/license/mtti/node-migrator)](https://github.com/mtti/node-migrator/blob/master/LICENSE)
 
-Written in TypeScript but intended to be usable from plain JavaScript. The compiled JavaScript targets Node 8.10, which is the newest version supported by AWS Lambda.
+A pragmatic database migration utility. Designed mainly for PostgreSQL but extendable for use with probably any database.
 
 **Warning:** All versions prior to `1.0.0` are pre-releases. Expect the API to change wildly during this period.
 
@@ -12,10 +12,10 @@ This library is designed based on three assumptions:
 2. These pieces of code need to be run in a certain order.
 3. Each piece of code should only be run once.
 
-These *pieces of code* for the purposes of this library are objects implementing the `IMigration<T>` interface:
+These *pieces of code* for the purposes of this library are objects implementing the `Migration<T>` type:
 
 ```TypeScript
-export interface IMigration<T> {
+export interface Migration<T> {
   id: number;
   up: (client: T) => Promise<void>;
 }
@@ -29,7 +29,7 @@ Migrations are run by *migrators*, subclasses of the abstract base class `Migrat
 
 ## PostgreSQL
 
-A PostgreSQL-specific migrator is included with this library, called `PostgresMigrator` which extends `Migrator<PoolClient>` and accepts an array of `IMigration<PoolClient>` objects. It stores the ID of the last executed migration in a table called `migrations` (the name is hardcoded for now).
+A PostgreSQL-specific migrator is included with this library, called `PostgresMigrator` which extends `Migrator<PoolClient>` and accepts an array of `Migration<PoolClient>` objects. It stores the ID of the last executed migration in a table called `migrations` (the name is hardcoded for now).
 
 When run, the migrator will attempt to create this table with the schema
 
