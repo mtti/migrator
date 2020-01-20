@@ -15,7 +15,7 @@ This library is designed based on three assumptions:
 These *pieces of code* for the purposes of this library are objects implementing the `Migration<T>` type:
 
 ```TypeScript
-export interface Migration<T> {
+export type Migration<T> = {
   id: number;
   up: (client: T) => Promise<void>;
 }
