@@ -14,5 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-export * from './migrator';
-export * from './PostgresMigrator';
+export type Migration<T> = {
+  id: number;
+  up: (client: T) => Promise<void>;
+}

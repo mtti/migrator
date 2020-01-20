@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Matti Hiltunen
+Copyright 2019-2020 Matti Hiltunen
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,10 +15,12 @@ limitations under the License.
 */
 
 import { Pool, PoolClient } from 'pg';
-import { IMigration, Migrator } from './migrator';
+import { Migration } from './Migration';
+import { Migrator } from './migrator';
 
 export class PostgresMigrator extends Migrator<PoolClient> {
   private _pool: Pool;
+
   private _client?: PoolClient;
 
   protected get client(): PoolClient {
@@ -28,7 +30,7 @@ export class PostgresMigrator extends Migrator<PoolClient> {
     throw new Error('Client not initialized');
   }
 
-  constructor(pool: Pool, migrations: Array<IMigration<PoolClient>>) {
+  constructor(pool: Pool, migrations: Array<Migration<PoolClient>>) {
     super(migrations);
     this._pool = pool;
   }
@@ -52,10 +54,10 @@ export class PostgresMigrator extends Migrator<PoolClient> {
     this._client = await this._pool.connect();
   }
 
-  protected async onMigrate(migration: IMigration<PoolClient>): Promise<void> {
+  protected async onMigrate(migration: Migration<PoolClient>): Promise<void> {
     await this.client.query('BEGIN;');
-    migration.up(this.client);
-    await this.client.query('UPDATE migrations SET last = $1 WHERE id = 0;', [ migration.id ]);
+    await migration.up(this.client);
+    await this.client.query('UPDATE migrations SET last = $1 WHERE id = 0;', [migration.id]);
     await this.client.query('COMMIT;');
   }
 

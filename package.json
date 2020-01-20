@@ -1,45 +1,46 @@
 {
   "name": "@mtti/migrator",
   "engines": {
-    "node": ">=8.10.0"
+    "node": ">=12.13.0"
   },
   "version": "0.1.0",
-  "description": "Database migration utility with built-in PostgreSQL support",
+  "description": "Minimalistic database migration library",
   "author": "Matti Hiltunen",
   "license": "Apache-2.0",
   "repository": "github:mtti/node-migrator",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "setup": "npm install",
     "build": "tsc",
-    "test": "npm run lint:ts && npm run jest:ts",
+    "test": "npm run lint && npm run jest:ts",
     "test:integration": "npm run lint:js && npm run jest:js",
     "lint:js": "eslint 'integration-tests/**/*.js'",
-    "lint:ts": "tslint 'src/**/*.ts'",
+    "lint": "eslint 'src/**/*.ts'",
+    "lint:fix": "eslint --fix 'src/**/*.ts'",
     "jest:js": "jest -i --config ./integration-tests/jest.config.json",
-    "jest:ts": "jest --config ./jest.config.ts.json",
+    "jest:ts": "jest --config ./jest.config.json",
     "tsc": "tsc",
-    "tslint": "tslint",
     "prepare": "npm run build",
-    "prepublishOnly": "npm run test"
+    "prepublishOnly": "npm run test",
+    "setup": "npm install"
   },
-  "dependencies": {},
   "devDependencies": {
+    "@mtti/eslint-config-typescript": "2.0.0",
+    "@typescript-eslint/eslint-plugin": "2.16.0",
+    "@typescript-eslint/parser": "2.16.0",
     "@types/jest": "24.9.0",
     "@types/pg": "7.14.1",
     "eslint": "6.8.0",
-    "eslint-config-airbnb-base": "14.0.0",
     "eslint-plugin-import": "2.20.0",
     "jest": "24.9.0",
     "pg": "7.17.1",
     "ts-jest": "24.3.0",
-    "tslint": "5.20.1",
     "typescript": "3.7.5"
   },
   "peerDependencies": {
     "pg": "7.x.x"
   },
   "files": [
-    "dist"
+    "lib",
+    "!lib/**/*.test.*"
   ]
 }

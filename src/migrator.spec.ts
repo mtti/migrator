@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Matti Hiltunen
+Copyright 2019-2020 Matti Hiltunen
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,12 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { IMigration, Migrator } from './migrator';
+import { Migration } from './Migration';
+import { Migrator } from './migrator';
 
-function createDummyMigrations(count: number): Array<IMigration<void>> {
-  const result: Array<IMigration<void>> = [];
+function createDummyMigrations(count: number): Array<Migration<void>> {
+  const result: Array<Migration<void>> = [];
 
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < count; i += 1) {
     result.push({
       id: i + 1,
       up: jest.fn().mockResolvedValue(null),
@@ -29,7 +30,7 @@ function createDummyMigrations(count: number): Array<IMigration<void>> {
   return result;
 }
 
-function createFaultyMigration(id: number): IMigration<void> {
+function createFaultyMigration(id: number): Migration<void> {
   return {
     id,
     up: jest.fn(() => { throw new Error('Dummy error'); }),
@@ -39,7 +40,7 @@ function createFaultyMigration(id: number): IMigration<void> {
 class DummyMigrator extends Migrator<void> {
   private _last: number;
 
-  constructor(migrations: Array<IMigration<void>>, last: number) {
+  constructor(migrations: Array<Migration<void>>, last: number) {
     super(migrations);
     this._last = last;
   }
@@ -48,15 +49,14 @@ class DummyMigrator extends Migrator<void> {
     return this._last;
   }
 
-  protected async onMigrate(migration: IMigration<void>): Promise<void> {
+  protected async onMigrate(migration: Migration<void>): Promise<void> {
     await migration.up();
-    return;
   }
 }
 
 describe('Migrator', () => {
   let migrator: DummyMigrator;
-  let migrations: Array<IMigration<void>>;
+  let migrations: Array<Migration<void>>;
   let error: Error|null;
 
   describe('up()', () => {
@@ -68,10 +68,10 @@ describe('Migrator', () => {
       beforeEach(async () => {
         const migration = {
           id: 0,
-          up: () => Promise.resolve(),
+          up: (): Promise<void> => Promise.resolve(),
         };
         try {
-          migrator = new DummyMigrator([ migration ], 0);
+          migrator = new DummyMigrator([migration], 0);
         } catch (err) {
           error = err;
         }

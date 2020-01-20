@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /*
-Copyright 2019 Matti Hiltunen
+Copyright 2019-2020 Matti Hiltunen
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,20 +15,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-export interface IMigration<T> {
-  id: number;
-  up: (client: T) => Promise<void>;
-}
+import { Migration } from './Migration';
 
 /**
  * Abstract migrator base class.
  */
 export abstract class Migrator<T> {
-  protected _migrations: Array<IMigration<T>>;
+  protected _migrations: Array<Migration<T>>;
 
-  constructor(migrations: Array<IMigration<T>>) {
-    this._migrations = [ ...migrations ];
-    this._migrations.sort((a: IMigration<T>, b: IMigration<T>) => a.id - b.id);
+  constructor(migrations: Array<Migration<T>>) {
+    this._migrations = [...migrations];
+    this._migrations.sort((a: Migration<T>, b: Migration<T>) => a.id - b.id);
     if (this._migrations.length > 0 && this._migrations[0].id <= 0) {
       throw new Error('Smallest migration ID should be equal or greater than 1.');
     }
@@ -39,41 +37,42 @@ export abstract class Migrator<T> {
 
     const lastRunMigration: number = await this.getLast();
     const unappliedMigrations = this._migrations
-      .filter((migration: IMigration<T>) => migration.id > lastRunMigration);
+      .filter((migration: Migration<T>) => migration.id > lastRunMigration);
 
-    const reducer = (promise: Promise<void>, migration: IMigration<T>) =>
-      promise.then(() => this._apply(migration));
+    const reducer = (
+      promise: Promise<void>,
+      migration: Migration<T>,
+    ): Promise<void> => promise.then(() => this._apply(migration));
     return unappliedMigrations.reduce(reducer, Promise.resolve());
   }
 
   /** Called when the migrator is starting. */
   protected async onInitialize(): Promise<void> {
-    return;
+
   }
 
   /** Returns the ID of the last applied migration. */
   protected abstract async getLast(): Promise<number>;
 
   /** Called to run a migration. */
-  protected abstract async onMigrate(migration: IMigration<T>): Promise<void>;
+  protected abstract async onMigrate(migration: Migration<T>): Promise<void>;
 
   /** Called before a migration is run. */
-  protected async onBeforeMigration(): Promise<void> {
-    return;
-  }
+  protected async onBeforeMigration(): Promise<void> {}
 
-  /** Called if the migration threw an error. Can be used to roll back a transaction. */
-  protected async onCancel(): Promise<void> {
-    return;
-  }
+  /**
+   * Called if the migration threw an error. Can be used to roll back
+   * a transaction.
+   */
+  protected async onCancel(): Promise<void> {}
 
-  /** Called after a migration is run regardless of whether it threw an error. */
-  protected async onAfterMigration() {
-    return;
-  }
+  /**
+   * Called after a migration is run regardless of whether it threw an error.
+   */
+  protected async onAfterMigration(): Promise<void> {}
 
   /** Runs a migration. */
-  private async _apply(migration: IMigration<T>): Promise<void> {
+  private async _apply(migration: Migration<T>): Promise<void> {
     await this.onBeforeMigration();
     try {
       await this.onMigrate(migration);
@@ -81,7 +80,7 @@ export abstract class Migrator<T> {
       await this.onCancel();
       throw e;
     } finally {
-      this.onAfterMigration();
+      await this.onAfterMigration();
     }
   }
 }
