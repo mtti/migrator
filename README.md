@@ -1,4 +1,4 @@
-[![Written in TypeScript](https://flat.badgen.net/badge/icon/typescript?icon=typescript&label)](http://www.typescriptlang.org/) [![Works with PostgreSQL](https://flat.badgen.net/badge/icon/postgresql?icon=postgresql&label)](https://www.postgresql.org/) [![License](https://flat.badgen.net/github/license/mtti/node-migrator)](https://github.com/mtti/node-migrator/blob/master/LICENSE)
+[![Written in TypeScript](https://flat.badgen.net/badge/icon/TypeScript?icon=typescript&label)](http://www.typescriptlang.org/) [![Works with PostgreSQL](https://flat.badgen.net/badge/icon/PostgreSQL?icon=postgresql&label)](https://www.postgresql.org/) [![License](https://flat.badgen.net/github/license/mtti/migrator)](https://github.com/mtti/migrator/blob/master/LICENSE)
 
 A pragmatic database migration utility. Designed mainly for PostgreSQL but extendable for use with probably any database.
 

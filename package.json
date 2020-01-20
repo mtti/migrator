@@ -7,7 +7,7 @@
   "description": "Minimalistic database migration library",
   "author": "Matti Hiltunen",
   "license": "Apache-2.0",
-  "repository": "github:mtti/node-migrator",
+  "repository": "github:mtti/migrator",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
