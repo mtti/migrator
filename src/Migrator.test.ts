@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 import { Migration } from './Migration';
-import { Migrator } from './migrator';
+import { Migrator } from './Migrator';
 
 function createDummyMigrations(count: number): Array<Migration<void>> {
   const result: Array<Migration<void>> = [];

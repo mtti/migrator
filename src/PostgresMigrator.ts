@@ -16,7 +16,7 @@ limitations under the License.
 
 import { Pool, PoolClient } from 'pg';
 import { Migration } from './Migration';
-import { Migrator } from './migrator';
+import { Migrator } from './Migrator';
 
 export class PostgresMigrator extends Migrator<PoolClient> {
   private _pool: Pool;
