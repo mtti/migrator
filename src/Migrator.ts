@@ -15,15 +15,35 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import { EventEmitter } from 'events';
 import { Migration } from './Migration';
+
+export declare interface Migrator<T> {
+  /**
+   * The `unapplied` event is emitted before any migrations are run, with the
+   * number of unapplied migrations found.
+   */
+  on(event: 'unapplied', listener: (count: number) => void): this;
+
+  /**
+   * The `migrate` event is emitted before a migration is run, with the ID of
+   * that migration.
+   */
+  on(event: 'migrate', listener: (id: number) => void): this;
+
+  emit(event: 'unapplied', count: number): boolean;
+
+  emit(event: 'migrate', id: number): boolean;
+}
 
 /**
  * Abstract migrator base class.
  */
-export abstract class Migrator<T> {
+export abstract class Migrator<T> extends EventEmitter {
   protected _migrations: Array<Migration<T>>;
 
   constructor(migrations: Array<Migration<T>>) {
+    super();
     this._migrations = [...migrations];
     this._migrations.sort((a: Migration<T>, b: Migration<T>) => a.id - b.id);
     if (this._migrations.length > 0 && this._migrations[0].id <= 0) {
@@ -38,6 +58,8 @@ export abstract class Migrator<T> {
     const lastRunMigration: number = await this.getLast();
     const unappliedMigrations = this._migrations
       .filter((migration: Migration<T>) => migration.id > lastRunMigration);
+
+    this.emit('unapplied', unappliedMigrations.length);
 
     const reducer = (
       promise: Promise<void>,
@@ -75,6 +97,7 @@ export abstract class Migrator<T> {
   private async _apply(migration: Migration<T>): Promise<void> {
     await this.onBeforeMigration();
     try {
+      this.emit('migrate', migration.id);
       await this.onMigrate(migration);
     } catch (e) {
       await this.onCancel();
