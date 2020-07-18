@@ -1,0 +1,15 @@
+{
+  "extends": [
+    "config:js-lib"
+  ],
+  "schedule": [
+    "on friday"
+  ],
+  "automerge": true,
+  "packageRules": [
+    {
+      "depTypeList": ["dependencies"],
+      "rangeStrategy": "bump"
+    }
+  ]
+}
