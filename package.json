@@ -34,7 +34,7 @@
     "jest": "26.4.2",
     "pg": "8.3.3",
     "ts-jest": "26.3.0",
-    "typescript": "4.0.2"
+    "typescript": "4.0.3"
   },
   "peerDependencies": {
     "pg": "8.x.x"
